@@ -1,0 +1,13 @@
+.tools/
+tmp/
+output/
+.firebase/
+node_modules/
+
+# Android build outputs & caches
+android/.gradle/
+android/build/
+android/app/build/
+android/*.jks
+android/*.keystore
+android/local.properties

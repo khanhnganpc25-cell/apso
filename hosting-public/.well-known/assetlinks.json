@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "vn.apso.app",
+      "sha256_cert_fingerprints": [
+        "07:74:25:33:58:31:42:9C:A9:13:5B:30:EA:CC:8B:8E:19:47:D4:A9:7C:6C:FC:D8:14:49:85:59:BE:C9:74:B1"
+      ]
+    }
+  }
+]

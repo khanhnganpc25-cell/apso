@@ -1,0 +1,26 @@
+{
+  "name": "apso",
+  "version": "1.0.0",
+  "private": true,
+  "description": "APSO - Ung dung quan ly ap xa va ho dan",
+  "scripts": {
+    "start": "node serve-local.js",
+    "serve": "node serve-local.js",
+    "build:bundle": "node build-unified-bundle.js",
+    "prepare-hosting": "node prepare-hosting.js",
+    "verify": "node verify-all.js"
+  },
+  "keywords": [
+    "apso",
+    "pwa",
+    "firebase"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^8.5.2",
+    "stream-chain": "3.6.3"
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">APSO - Quản Lý dân cư số</string>
+    <string name="title_activity_main">APSO - Quản Lý dân cư số</string>
+    <string name="package_name">vn.apso.app</string>
+    <string name="custom_url_scheme">vn.apso.app</string>
+</resources>

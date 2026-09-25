@@ -1,0 +1,23 @@
+{
+  "appId": "vn.apso.app",
+  "appName": "APSO - Quản Lý dân cư số",
+  "webDir": "hosting-public",
+  "server": {
+    "url": "https://apso-vn.web.app",
+    "cleartext": false,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#0f1f3d",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    }
+  }
+}
