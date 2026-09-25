@@ -8,6 +8,23 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/apso.apk",
+        "destination": "https://github.com/khanhnganpc25-cell/apso/releases/download/v2.1.0/APSO-Quan-Ly-Dan-Cu-So.apk",
+        "type": 302
+      },
+      {
+        "source": "/APSO-Quan-Ly-Dan-Cu-So.apk",
+        "destination": "https://github.com/khanhnganpc25-cell/apso/releases/download/v2.1.0/APSO-Quan-Ly-Dan-Cu-So.apk",
+        "type": 302
+      },
+      {
+        "source": "/download/apso.apk",
+        "destination": "https://github.com/khanhnganpc25-cell/apso/releases/download/v2.1.0/APSO-Quan-Ly-Dan-Cu-So.apk",
+        "type": 302
+      }
+    ],
     "headers": [
       {
         "source": "/.well-known/assetlinks.json",
@@ -30,6 +47,14 @@
           "functionId": "adminResetPassword",
           "region": "us-central1"
         }
+      },
+      {
+        "source": "/download",
+        "destination": "/download/index.html"
+      },
+      {
+        "source": "/download/**",
+        "destination": "/download/index.html"
       },
       {
         "source": "**",

@@ -10,12 +10,18 @@ if (path.dirname(output) !== root || path.basename(output) !== "hosting-public")
 fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(output, { recursive: true });
 
-for (const directory of ["_next", "icons", "vendor"]) {
-  fs.cpSync(path.join(root, directory), path.join(output, directory), { recursive: true });
+for (const directory of ["_next", "icons", "vendor", "download"]) {
+  const dirPath = path.join(root, directory);
+  if (fs.existsSync(dirPath)) {
+    fs.cpSync(dirPath, path.join(output, directory), { recursive: true });
+  }
 }
 
 for (const file of ["cong-dan-so-logo.svg", "favicon.ico", "manifest.webmanifest"]) {
-  fs.copyFileSync(path.join(root, file), path.join(output, file));
+  const filePath = path.join(root, file);
+  if (fs.existsSync(filePath)) {
+    fs.copyFileSync(filePath, path.join(output, file));
+  }
 }
 
 fs.copyFileSync(path.join(root, "site-snapshot.html"), path.join(output, "index.html"));
