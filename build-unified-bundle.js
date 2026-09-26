@@ -54,6 +54,8 @@ hotfixOnce('function aq(){return s1.map(', 'function aq(records=s1){return recor
 hotfixOnce('function aX(){e3("cong-dan-so-nhan-khau.xlsx","Nhan khau",eJ,aq())}', exportIntegration + '\nfunction aX(){apsoOpenListExport("residents")}');
 hotfixOnce('e3("cong-dan-so-ho-khau.xlsx","Ho khau",e$,tA.map(e=>[e.id,e.headName,e.type,e.province,e.commune,e.hamlet,e.group,e.detailAddress,e.address,e.latitude,e.longitude,e.photoUrl,e.memberCount,e.createdAt]))', 'apsoOpenListExport("households")');
 
+code = require('./chat-build.cjs')(code, root);
+
 // 1. Kiểm tra tính toàn vẹn của tất cả các tính năng
 const checks = [
   { name: "Phân quyền quản trị (assignedDuties)", pattern: "assignedDuties" },
