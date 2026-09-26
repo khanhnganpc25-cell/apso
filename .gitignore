@@ -17,3 +17,4 @@ android/local.properties
 /apso.apk
 *.unified-master.bak-*
 *.unified-master.before-*
+*-debug.log

@@ -38,7 +38,13 @@ for (const file of ["cong-dan-so-logo.svg", "favicon.ico", "manifest.webmanifest
   }
 }
 
-fs.copyFileSync(path.join(root, "site-snapshot.html"), path.join(output, "index.html"));
+// The recovered app uses a stable chunk filename even when its contents change.
+// Version both script and RSC references so existing web/app caches get hotfixes.
+const appChunkName = "page-ef1198d6a6018514.js";
+const appChunk = fs.readFileSync(path.join(root, "_next/static/chunks/app", appChunkName));
+const appRevision = require("crypto").createHash("sha256").update(appChunk).digest("hex").slice(0, 12);
+const snapshot = fs.readFileSync(path.join(root, "site-snapshot.html"), "utf8");
+fs.writeFileSync(path.join(output, "index.html"), snapshot.replaceAll(appChunkName, `${appChunkName}?v=${appRevision}`));
 
 const assetLinksSource = path.join(root, "android-app", "assetlinks.json");
 if (fs.existsSync(assetLinksSource)) {

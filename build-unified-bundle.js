@@ -27,6 +27,26 @@ if (!fs.existsSync(sourceFile)) {
 
 let code = fs.readFileSync(sourceFile, "utf8");
 
+// Reproducible hotfix: use the readable, regression-tested scoped query loader.
+const scopedReader = fs.readFileSync(path.join(root, "scoped-cloud-read.js"), "utf8");
+const readerStart = code.includes("// APSO_SCOPED_LOGIN_FIX_V1")
+  ? code.indexOf("// APSO_SCOPED_LOGIN_FIX_V1") : code.indexOf("async function ew(");
+const readerEnd = code.indexOf("async function eC(", readerStart);
+if (readerStart < 0 || readerEnd < 0) throw new Error("Scoped reader insertion point missing");
+code = code.slice(0, readerStart) + scopedReader + "\n" + code.slice(readerEnd);
+
+function hotfixOnce(before, after) {
+  if (code.includes(after)) return;
+  if (code.split(before).length !== 2) throw new Error("Login hotfix insertion point missing");
+  code = code.replace(before, after);
+}
+hotfixOnce('async function eT(e){', 'async function eT(e){if(!apsoCloudReady)throw Error("Chưa tải xong dữ liệu; đồng bộ đã tạm dừng để bảo vệ hồ sơ.");');
+hotfixOnce('if(sh(!1),sS(t),!t){', 'if(apsoResetCloudRead(),sh(!1),sS(t),!t){');
+// Preserve authentication after a data-loading failure, but never display stale
+// records from another user or auto-save empty/partially loaded lists.
+hotfixOnce('tB(s);let a=await eS(),', 'tB(s);let a;try{a=await eS()}catch(loadError){console.error("APSO cloud load:",loadError);tE([]);tM([]);tH([]);tR([s]);tK([]);sT([]);tV(null);sg(!1);su("Đăng nhập thành công nhưng chưa tải được dữ liệu. Hãy tải lại trang; nếu vẫn lỗi, báo quản trị viên. "+(loadError.code||""));return}let ');
+hotfixOnce('sg(!0),su(a?', 'apsoCloudReady=!0,sg(!0),su(a?');
+
 // 1. Kiểm tra tính toàn vẹn của tất cả các tính năng
 const checks = [
   { name: "Phân quyền quản trị (assignedDuties)", pattern: "assignedDuties" },

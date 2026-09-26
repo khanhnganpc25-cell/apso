@@ -1,0 +1,139 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isActiveUser() {
+      return signedIn() && userDoc().active == true;
+    }
+
+    function isAdmin() {
+      return isActiveUser() && userDoc().role == "ADMIN";
+    }
+
+    function hasPermission(permission) {
+      return isAdmin()
+        || (isActiveUser()
+          && userDoc().permissions is list
+          && userDoc().permissions.hasAny([permission]));
+    }
+
+    function canReadApp() {
+      return hasPermission("VIEW_RESIDENTS")
+        || hasPermission("VIEW_HOUSEHOLDS")
+        || hasPermission("VIEW_REPORTS")
+        || hasPermission("ASSIGN_TASKS")
+        || hasPermission("MANAGE_USERS");
+    }
+
+    function inAssignedArea(data) {
+      let scope = userDoc().scope;
+      return isAdmin()
+        || !(scope is map)
+        || ((!('province' in scope) || scope.province == "" || data.province == scope.province)
+          && (!('commune' in scope) || scope.commune == "" || data.commune == scope.commune)
+          && (!('hamlet' in scope) || scope.hamlet == "" || data.hamlet == scope.hamlet)
+          && (!('group' in scope) || scope.group == "" || data.group == scope.group));
+    }
+
+    function taskInAssignedArea(data) {
+      return !('province' in data) || inAssignedArea(data);
+    }
+
+    function isTaskAssignee(data) {
+      return ('assigneeUid' in data) && data.assigneeUid == request.auth.uid;
+    }
+
+    function isTaskCreator(data) {
+      return ('creatorUid' in data) && data.creatorUid == request.auth.uid;
+    }
+
+    function canViewTask(data) {
+      return isAdmin()
+        || isTaskAssignee(data)
+        || isTaskCreator(data)
+        || (hasPermission("VIEW_TASKS") && taskInAssignedArea(data))
+        || (hasPermission("ASSIGN_TASKS") && taskInAssignedArea(data))
+        || (hasPermission("APPROVE_TASKS") && taskInAssignedArea(data));
+    }
+
+    function assigneeCanUpdateTask() {
+      return hasPermission("UPDATE_ASSIGNED_TASKS")
+        && isTaskAssignee(resource.data)
+        && request.resource.data.assigneeUid == resource.data.assigneeUid
+        && request.resource.data.creatorUid == resource.data.creatorUid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "status", "progress", "completionNote", "completedAt", "updatedAt"
+        ]);
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin() || hasPermission("ASSIGN_TASKS"));
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isActiveUser()
+        && request.resource.data.actorUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /residents/{residentId} {
+      allow read: if hasPermission("VIEW_RESIDENTS") && inAssignedArea(resource.data);
+      allow create: if hasPermission("CREATE_RESIDENTS") && inAssignedArea(request.resource.data);
+      allow update: if hasPermission("EDIT_RESIDENTS")
+        && inAssignedArea(resource.data)
+        && inAssignedArea(request.resource.data);
+      allow delete: if hasPermission("DELETE_RESIDENTS") && inAssignedArea(resource.data);
+    }
+
+    match /households/{householdId} {
+      allow read: if hasPermission("VIEW_HOUSEHOLDS") && inAssignedArea(resource.data);
+      allow create: if hasPermission("CREATE_HOUSEHOLDS") && inAssignedArea(request.resource.data);
+      allow update: if hasPermission("EDIT_HOUSEHOLDS")
+        && inAssignedArea(resource.data)
+        && inAssignedArea(request.resource.data);
+      allow delete: if hasPermission("DELETE_HOUSEHOLDS") && inAssignedArea(resource.data);
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isActiveUser() && canViewTask(resource.data);
+      allow create: if hasPermission("ASSIGN_TASKS")
+        && request.resource.data.creatorUid == request.auth.uid
+        && taskInAssignedArea(request.resource.data);
+      allow update: if (hasPermission("ASSIGN_TASKS") && taskInAssignedArea(resource.data))
+        || (hasPermission("APPROVE_TASKS") && taskInAssignedArea(resource.data))
+        || assigneeCanUpdateTask();
+      allow delete: if hasPermission("DELETE_TASKS") && taskInAssignedArea(resource.data);
+    }
+
+    match /apsoMeta/{docId} {
+      allow read: if canReadApp();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /apsoConfig/locations {
+      allow read: if isActiveUser();
+      allow create, update, delete: if hasPermission("MANAGE_LOCATIONS");
+    }
+
+    match /apsoApp/{docId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
