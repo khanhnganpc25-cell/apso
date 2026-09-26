@@ -12,7 +12,9 @@ Yêu cầu Node 20+, Java 21, Android SDK 35. Các gói Capacitor được khóa
 4. `npx cap sync android`
 5. `cd android` rồi `./gradlew assembleRelease` (Windows: `gradlew.bat assembleRelease`).
 
-APK ở `android/app/build/outputs/apk/release/app-release.apk`. Phiên bản hiện tại: 2.1.1, versionCode 2. Mỗi lần phát hành APK phải tăng versionCode.
+APK ở `android/app/build/outputs/apk/release/app-release.apk`. Phiên bản hiện tại: 2.1.2, versionCode 3. Mỗi lần phát hành APK phải tăng versionCode.
+
+Bản 2.1.2 thêm Filesystem và Share để xuất XLSX vào cache riêng của app rồi mở hộp lưu/chia sẻ Android. Bản app cũ không có hai plugin sẽ báo cần cập nhật, không báo tải thành công giả. Kiểm tra hồi quy: `node tests/list-export.test.cjs` và `node tests/list-export-browser.cjs` (cần Edge). Dữ liệu kiểm thử là dữ liệu giả, không tải hồ sơ thật lên dịch vụ ngoài.
 
 Bản 2.1.0 đang phát hành được ký bằng chứng chỉ Android Debug có SHA-256 `3d2cfdf7bfcbc72700c4e3908ed3555799ecf5e5421a0f79f423f00d709d2483`. Bản cập nhật nội bộ giữ đúng chứng chỉ này để cài đè, nhưng tắt debuggable. Đây chưa phải quy trình ký phát hành Google Play. Không thay khóa mà chưa có kế hoạch chuyển đổi các máy đang dùng.
 

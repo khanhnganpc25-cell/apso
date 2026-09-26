@@ -4,7 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 const cp = require('child_process');
 const repo = 'khanhnganpc25-cell/apso';
-const tag = process.env.APSO_RELEASE_TAG || 'v2.1.1';
+const tag = process.env.APSO_RELEASE_TAG || 'v2.1.2';
 const apkPath = path.join(__dirname, 'android/app/build/outputs/apk/release/app-release.apk');
 const token = process.env.GITHUB_TOKEN;
 const headers = { Authorization: `Bearer ${token}`, 'User-Agent': 'APSO-release', Accept: 'application/vnd.github+json' };
@@ -29,7 +29,7 @@ async function main() {
   const name = 'APSO-Quan-Ly-Dan-Cu-So.apk';
   const release = await api('/releases','POST',{
     tag_name:tag,target_commitish:commit,name:`APSO ${tag} – Android nội bộ`,draft:true,
-    body:`Bản Capacitor từ thư mục android/.\n\nCập nhật giao diện trò chuyện và trang tải ứng dụng. Nội dung web tải từ https://apso-vn.web.app. Giữ chứng chỉ của bản 2.1.0 để hỗ trợ cài đè; APK tắt chế độ gỡ lỗi. Thông báo đẩy khi đóng app chưa được triển khai.\n\nSHA-256: ${digest}\nMã nguồn: ${commit}`
+    body:`Bản Capacitor từ thư mục android/.\n\nXuất danh sách sau lọc hoặc toàn bộ dữ liệu trong quyền truy cập. Chọn nhiều nhóm, từng dòng, số lượng; gộp một sheet hoặc chia nhiều sheet trong một file XLSX. Bổ sung lưu/chia sẻ Excel trên Android qua Filesystem và Share. Nội dung web tải từ https://apso-vn.web.app. Giữ chứng chỉ của bản cũ để hỗ trợ cài đè; APK tắt chế độ gỡ lỗi. Chưa kiểm tra cài trên điện thoại thật. Thông báo đẩy khi đóng app chưa được triển khai.\n\nSHA-256: ${digest}\nMã nguồn: ${commit}`
   });
   const base = release.upload_url.replace(/\{.*$/, '');
   for (const [fileName, bytes, contentType] of [

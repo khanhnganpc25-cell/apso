@@ -47,6 +47,13 @@ hotfixOnce('if(sh(!1),sS(t),!t){', 'if(apsoResetCloudRead(),sh(!1),sS(t),!t){');
 hotfixOnce('tB(s);let a=await eS(),', 'tB(s);let a;try{a=await eS()}catch(loadError){console.error("APSO cloud load:",loadError);tE([]);tM([]);tH([]);tR([s]);tK([]);sT([]);tV(null);sg(!1);su("Đăng nhập thành công nhưng chưa tải được dữ liệu. Hãy tải lại trang; nếu vẫn lỗi, báo quản trị viên. "+(loadError.code||""));return}let ');
 hotfixOnce('sg(!0),su(a?', 'apsoCloudReady=!0,sg(!0),su(a?');
 
+const exportModule = fs.readFileSync(path.join(root, 'list-export.js'), 'utf8').replace(/\nif\(typeof module[^\n]+\n?$/, '\n');
+const exportIntegration = fs.readFileSync(path.join(root, 'list-export-integration.js'), 'utf8');
+hotfixOnce('function tv(){var e,t,l,k,I,K,L,B,V,P,q,F,X;', exportModule + '\nfunction tv(){var e,t,l,k,I,K,L,B,V,P,q,F,X;');
+hotfixOnce('function aq(){return s1.map(', 'function aq(records=s1){return records.map(');
+hotfixOnce('function aX(){e3("cong-dan-so-nhan-khau.xlsx","Nhan khau",eJ,aq())}', exportIntegration + '\nfunction aX(){apsoOpenListExport("residents")}');
+hotfixOnce('e3("cong-dan-so-ho-khau.xlsx","Ho khau",e$,tA.map(e=>[e.id,e.headName,e.type,e.province,e.commune,e.hamlet,e.group,e.detailAddress,e.address,e.latitude,e.longitude,e.photoUrl,e.memberCount,e.createdAt]))', 'apsoOpenListExport("households")');
+
 // 1. Kiểm tra tính toàn vẹn của tất cả các tính năng
 const checks = [
   { name: "Phân quyền quản trị (assignedDuties)", pattern: "assignedDuties" },
@@ -87,6 +94,7 @@ if (!allPassed) {
 }
 
 // 2. Đồng bộ vào cả _next và hosting-public
+new (require('vm').Script)(code, { filename: 'apso-generated-bundle.js' });
 const targetPaths = [
   path.join(root, "_next", "static", "chunks", "app", "page-ef1198d6a6018514.js"),
   path.join(root, "hosting-public", "_next", "static", "chunks", "app", "page-ef1198d6a6018514.js")

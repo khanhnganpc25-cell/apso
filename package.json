@@ -22,11 +22,14 @@
     "@capacitor/android": "7.6.9",
     "@capacitor/cli": "7.6.9",
     "@capacitor/core": "7.6.9",
+    "@capacitor/filesystem": "^7.1.8",
+    "@capacitor/share": "^7.0.4",
     "exceljs": "4.4.0",
     "stream-chain": "3.6.3"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^4.0.1",
+    "@playwright/test": "^1.63.0",
     "firebase": "^11.9.0"
   }
 }
