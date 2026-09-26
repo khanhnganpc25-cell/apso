@@ -1,0 +1,65 @@
+    // APSO internal chat: membership is provisioned only by an administrator.
+    function chatMember(room) {
+      return isActiveUser()
+        && get(/databases/$(database)/documents/chatDirectory/$(request.auth.uid)).data.channelId == room
+        && (isAdmin() || userDoc().scope.hamlet == "Ấp Tạ Quang Tỷ");
+    }
+    match /chatDirectory/{uid} {
+      allow read: if chatMember("ta_quang_ty_main");
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['id','uid','name','role','channelId'])
+        && request.resource.data.uid == uid
+        && request.resource.data.channelId == "ta_quang_ty_main";
+    }
+    match /chatRooms/{room}/messages/{messageId} {
+      function validMessage(d) {
+        return d.keys().hasOnly(['id','channelId','hamlet','senderUid','senderId','senderName','senderRole','type','text','file','task','mentions','residentRefs','location','createdAt','expiresAt','deliveryState','updatedAt'])
+          && d.updatedAt == request.time
+          && d.id == messageId && d.channelId == room
+          && d.senderUid == request.auth.uid
+          && d.senderId == userDoc().id && d.senderName == userDoc().name
+          && d.text is string && d.text.size() <= 12000
+          && d.mentions is list && d.mentions.size() <= 50
+          && d.residentRefs is list && d.residentRefs.size() <= 50
+          && d.createdAt is number && d.expiresAt is number
+          && d.createdAt <= request.time.toMillis() + 300000
+          && d.createdAt >= request.time.toMillis() - 300000
+          && d.expiresAt > d.createdAt && d.expiresAt <= d.createdAt + 1209600000
+          && d.deliveryState in ['uploading','ready']
+          && (d.file == null || (d.file is map
+            && d.file.keys().hasOnly(['name','type','size','chunkCount','cloudMessageId'])
+            && d.file.name is string && d.file.name.size() <= 255
+            && d.file.type is string && d.file.type.size() <= 150
+            && d.file.size is number && d.file.size > 0 && d.file.size <= 15728640
+            && d.file.chunkCount is int && d.file.chunkCount > 0 && d.file.chunkCount <= 100
+            && d.file.cloudMessageId == messageId))
+          && (d.task == null || hasPermission('ASSIGN_TASKS'));
+      }
+      allow read: if chatMember(room);
+      allow create: if chatMember(room) && validMessage(request.resource.data);
+      allow update: if chatMember(room) && (
+        (resource.data.senderUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deliveryState','updatedAt'])
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.deliveryState == 'ready')
+        || ((isAdmin() || hasPermission('ASSIGN_TASKS')
+          || (hasPermission('UPDATE_ASSIGNED_TASKS') && resource.data.task.assignedTo == userDoc().name))
+          && resource.data.task is map
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['task','updatedAt'])
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.task.diff(resource.data.task).affectedKeys().hasOnly(['status'])
+          && request.resource.data.task.status in ['Đang làm','Đã hoàn thành']));
+      allow delete: if isAdmin();
+      match /chunks/{chunkId} {
+        allow read: if chatMember(room);
+        allow create: if chatMember(room)
+          && get(/databases/$(database)/documents/chatRooms/$(room)/messages/$(messageId)).data.senderUid == request.auth.uid
+          && get(/databases/$(database)/documents/chatRooms/$(room)/messages/$(messageId)).data.deliveryState == 'uploading'
+          && request.resource.data.keys().hasOnly(['index','data'])
+          && request.resource.data.index is int && request.resource.data.index >= 0 && request.resource.data.index < 100
+          && request.resource.data.index < get(/databases/$(database)/documents/chatRooms/$(room)/messages/$(messageId)).data.file.chunkCount
+          && request.resource.data.data is string && request.resource.data.data.size() <= 240000;
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+    }

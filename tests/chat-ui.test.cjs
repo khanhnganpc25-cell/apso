@@ -3,7 +3,7 @@ const {apsoChatNormalize:n,apsoChatContext:c,apsoChatReconcile:r}=require('../ch
 assert.equal(n('Đặng Thị Hồng'),'dang thi hong');
 assert.deepEqual(c('Xin chào @Đặng Thị',18),{marker:'@',query:'Đặng Thị',start:9,end:18});
 assert.equal(c('abc@example.com',15),null);
-assert.equal(c('@An ',4,[{start:0,end:3}]).query,'An ');
+assert.equal(c('@An ',4,[{start:0,end:3}]),null);
 assert.deepEqual(r('@An hi','@Anh hi',[{start:0,end:3,token:'@An'}]),[]);
 assert.deepEqual(r('@An hi','@Bn hi',[{start:0,end:3,token:'@An'}]),[]);
 assert.equal(r('@An hi','Xin @An hi',[{start:0,end:3,token:'@An'}])[0].start,4);
