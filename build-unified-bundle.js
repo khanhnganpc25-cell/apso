@@ -42,7 +42,13 @@ const checks = [
   { name: "In biểu mẫu hành chính A4 chuẩn", pattern: "In biểu mẫu hành chính A4 chuẩn Quốc gia" },
   { name: "Sao lưu & Khôi phục JSON", pattern: "Sao lưu & Khôi phục dữ liệu" },
   { name: "Nhật ký kiểm toán hệ thống (Audit Logs)", pattern: "Nhật ký kiểm toán hệ thống" },
-  { name: "Biến động dân cư (Khai tử / Đã mất)", pattern: "Khai tử / Đã mất" }
+  { name: "Biến động dân cư (Khai tử / Đã mất)", pattern: "Khai tử / Đã mất" },
+  { name: "Chat cố định kiểu Zalo", pattern: "Nhắn tin… Dùng @ để gọi cán bộ, # để gắn nhân khẩu" },
+  { name: "Gọi cán bộ bằng @", pattern: "selectChatReference" },
+  { name: "Liên kết nhân khẩu bằng #", pattern: "openResidentFromChat" },
+  { name: "Gửi vị trí trong chat", pattern: "handleSendChatLocation" },
+  { name: "Bật/tắt thông báo", pattern: "toggleChatNotifications" },
+  { name: "Đồng bộ chat giữa các thiết bị", pattern: "APSO_CHAT_CLOUD_SYNC_ON_OPEN_V1" }
 ];
 
 let allPassed = true;

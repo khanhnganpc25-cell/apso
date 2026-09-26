@@ -7,6 +7,7 @@
     "start": "node serve-local.js",
     "serve": "node serve-local.js",
     "build:bundle": "node build-unified-bundle.js",
+    "build:excel": "node build-exceljs-chunk.js",
     "prepare-hosting": "node prepare-hosting.js",
     "verify": "node verify-all.js"
   },
@@ -18,9 +19,10 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@capacitor/android": "^8.5.2",
-    "@capacitor/cli": "^7.6.9",
-    "@capacitor/core": "^8.5.2",
+    "@capacitor/android": "7.6.9",
+    "@capacitor/cli": "7.6.9",
+    "@capacitor/core": "7.6.9",
+    "exceljs": "4.4.0",
     "stream-chain": "3.6.3"
   }
 }

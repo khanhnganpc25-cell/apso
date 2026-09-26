@@ -7,8 +7,8 @@ android {
         applicationId "vn.apso.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -20,8 +20,19 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    signingConfigs {
+        internalRelease {
+            // Preserve the certificate of the APK already installed by staff.
+            storeFile file(System.getenv('APSO_KEYSTORE_PATH') ?: "${System.getProperty('user.home')}/.android/debug.keystore")
+            storePassword System.getenv('APSO_KEYSTORE_PASSWORD') ?: 'android'
+            keyAlias System.getenv('APSO_KEY_ALIAS') ?: 'androiddebugkey'
+            keyPassword System.getenv('APSO_KEY_PASSWORD') ?: 'android'
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.internalRelease
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

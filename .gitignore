@@ -11,3 +11,9 @@ android/app/build/
 android/*.jks
 android/*.keystore
 android/local.properties
+
+# APKs are distributed as release assets; signing material stays on the release host.
+/APSO-Quan-Ly-Dan-Cu-So.apk
+/apso.apk
+*.unified-master.bak-*
+*.unified-master.before-*
